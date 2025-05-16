@@ -3,7 +3,6 @@ import './DataInput.css';
 
 const DataInput = ({ onSubmit }) => {
     const [waterName, setWaterName] = useState('');
-    const [coordinates, setCoordinates] = useState({ lat: '', lng: '' });
     const [parameters, setParameters] = useState({
         temp_water: '',
         temp_air: '',
@@ -15,10 +14,52 @@ const DataInput = ({ onSubmit }) => {
         nitrates: '',
         ammonia: ''
     });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onSubmit({ waterName, coordinates, parameters });
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(waterName + ' водоем')}&limit=1`
+            );
+            
+            if (!response.ok) {
+                throw new Error('Ошибка при поиске координат');
+            }
+
+            const data = await response.json();
+            
+            if (data && data.length > 0) {
+                const coordinates = {
+                    lat: parseFloat(data[0].lat),
+                    lng: parseFloat(data[0].lon)
+                };
+                
+                onSubmit({
+                    waterName,
+                    coordinates,
+                    parameters
+                });
+            } else {
+                throw new Error('Не удалось найти координаты водоема');
+            }
+        } catch (error) {
+            setError('Не удалось определить координаты водоема. Пожалуйста, проверьте название.');
+            console.error('Ошибка:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleParameterChange = (key, value) => {
+        setParameters(prev => ({
+            ...prev,
+            [key]: value
+        }));
     };
 
     return (
@@ -35,23 +76,7 @@ const DataInput = ({ onSubmit }) => {
                     />
                 </div>
 
-                <div className="coordinates-group">
-                    <label>Координаты:</label>
-                    <input
-                        type="number"
-                        placeholder="Широта"
-                        value={coordinates.lat}
-                        onChange={(e) => setCoordinates({...coordinates, lat: e.target.value})}
-                        required
-                    />
-                    <input
-                        type="number"
-                        placeholder="Долгота"
-                        value={coordinates.lng}
-                        onChange={(e) => setCoordinates({...coordinates, lng: e.target.value})}
-                        required
-                    />
-                </div>
+                {error && <div className="error-message">{error}</div>}
                 
                 <div className="parameters-grid">
                     {Object.entries(parameters).map(([key, value]) => (
@@ -61,18 +86,19 @@ const DataInput = ({ onSubmit }) => {
                                 type="number"
                                 step="0.1"
                                 value={value}
-                                onChange={(e) => setParameters({
-                                    ...parameters,
-                                    [key]: e.target.value
-                                })}
+                                onChange={(e) => handleParameterChange(key, e.target.value)}
                                 required
                             />
                         </div>
                     ))}
                 </div>
 
-                <button type="submit" className="submit-button">
-                    Получить прогноз
+                <button 
+                    type="submit" 
+                    className="submit-button"
+                    disabled={loading}
+                >
+                    {loading ? 'Получение координат...' : 'Получить прогноз'}
                 </button>
             </form>
         </div>

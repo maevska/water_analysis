@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
 import DataInput from '../../components/DataInput/DataInput';
 import PredictionResults from '../../components/PredictionResults/PredictionResults';
+import Map from '../../components/Map/Map';
 import './WaterQualityAnalysis.css';
 
 const WaterQualityAnalysis = () => {
@@ -15,6 +17,12 @@ const WaterQualityAnalysis = () => {
     const handleDataSubmit = async (data) => {
         try {
             setError(null);
+            setAnalysisData(prevData => ({
+                ...prevData,
+                waterName: data.waterName,
+                coordinates: data.coordinates
+            }));
+
             const response = await fetch('http://localhost:8000/api/predict', {
                 method: 'POST',
                 headers: {
@@ -29,7 +37,7 @@ const WaterQualityAnalysis = () => {
             }
 
             const results = await response.json();
-            setAnalysisData({ ...data, results });
+            setAnalysisData(prevData => ({ ...prevData, results }));
         } catch (error) {
             console.error('Ошибка при получении прогноза:', error);
             setError(error.message);
@@ -44,6 +52,12 @@ const WaterQualityAnalysis = () => {
                 <div className="error-message">
                     {error}
                 </div>
+            )}
+            {analysisData.coordinates.lat && analysisData.coordinates.lng && (
+                <Map 
+                    waterName={analysisData.waterName}
+                    coordinates={analysisData.coordinates}
+                />
             )}
             {analysisData.results && (
                 <PredictionResults 
