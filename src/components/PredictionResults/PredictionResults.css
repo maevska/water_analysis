@@ -1,0 +1,49 @@
+.prediction-results {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.result-item {
+    padding: 10px;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.parameter-name {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #495057;
+}
+
+.parameter-value {
+    font-size: 1.2em;
+    color: #0066cc;
+}
+
+.quality-class {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.quality-class h4 {
+    color: #495057;
+    margin-bottom: 10px;
+}
+
+.quality-class p {
+    font-size: 1.2em;
+    color: #0066cc;
+    font-weight: 600;
+}
