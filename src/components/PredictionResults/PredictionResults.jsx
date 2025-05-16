@@ -1,7 +1,7 @@
 import React from 'react';
 import './PredictionResults.css';
 
-const PredictionResults = ({ predictions, waterQualityClass }) => {
+const PredictionResults = ({ predictions, waterQualityClass, plot }) => {
     if (!predictions || !waterQualityClass) {
         return null;
     }
@@ -23,6 +23,16 @@ const PredictionResults = ({ predictions, waterQualityClass }) => {
                 <h4>Класс качества воды:</h4>
                 <p>{waterQualityClass.label}</p>
             </div>
+            {plot && (
+                <div className="plot-container">
+                    <h4>График сравнения показателей:</h4>
+                    <img 
+                        src={`data:image/png;base64,${plot}`}
+                        alt="График сравнения показателей"
+                        className="plot-image"
+                    />
+                </div>
+            )}
         </div>
     );
 };

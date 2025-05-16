@@ -49,6 +49,7 @@ const WaterQualityAnalysis = () => {
                 <PredictionResults 
                     predictions={analysisData.results.predictions}
                     waterQualityClass={analysisData.results.waterQualityClass}
+                    plot={analysisData.results.plot}
                 />
             )}
         </div>
