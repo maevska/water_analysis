@@ -1,63 +1,66 @@
-import React from 'react';
-import { PDFDownloadLink, Document, Page, Text, View } from '@react-pdf/renderer';
+import React, { useState } from 'react';
 import './PDFReport.css';
 
-const styles = {
-  section: {
-    margin: 10,
-    padding: 10,
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 10,
-  },
-  waterName: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    marginTop: 10,
-    marginBottom: 5,
-  },
-  results: {
-    marginTop: 20,
-  }
-};
+const PDFReport = ({ waterData }) => {
+    const [isLoading, setIsLoading] = useState(false);
 
-const PDFDocument = ({ data }) => (
-<Document>
-    <Page>
-    <View style={styles.section}>
-        <Text style={styles.title}>Отчет по качеству воды</Text>
-        <Text style={styles.waterName}>Водоем: {data.waterName}</Text>
-        
-        <View style={styles.results}>
-        <Text style={styles.subtitle}>Класс качества воды:</Text>
-        <Text>{data.results.waterQualityClass}</Text>
-        <Text style={styles.subtitle}>Прогнозируемые параметры:</Text>
-        {Object.entries(data.results.predictedParams).map(([param, value]) => (
-            <Text key={param}>{param}: {value.toFixed(2)}</Text>
-        ))}
-        </View>
-    </View>
-    </Page>
-</Document>
-);
+    const generatePDF = async () => {
+        try {
+            setIsLoading(true);
+            
+            // Подготавливаем данные в нужном формате
+            const reportData = {
+                waterName: waterData.waterName,
+                coordinates: waterData.coordinates || {},
+                predictions: waterData.predictions || {},
+                waterQualityClass: waterData.waterQualityClass || {},
+                plot: waterData.plot || '',
+                parameters: waterData.parameters || {}
+            };
 
-const PDFReport = ({ data }) => {
-return (
-    <div className="pdf-container">
-    <PDFDownloadLink
-        document={<PDFDocument data={data} />}
-        fileName={`water-quality-report-${data.waterName}.pdf`}
-    >
-        {({ loading }) => 
-        loading ? 'Создание отчета...' : 'Скачать отчет (PDF)'
+            const response = await fetch('http://localhost:8000/api/generate-report', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(reportData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Ошибка при создании отчета');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `water-quality-report-${waterData.waterName}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+        } catch (error) {
+            console.error('Ошибка при создании PDF:', error);
+            alert('Произошла ошибка при создании отчета');
+        } finally {
+            setIsLoading(false);
         }
-    </PDFDownloadLink>
-    </div>
-);
+    };
+
+    return (
+        <div className="report-generator">
+            <button 
+                onClick={generatePDF} 
+                className="generate-report-btn"
+                disabled={isLoading}
+            >
+                {isLoading ? 'Создание отчета...' : 'Скачать отчет PDF'}
+            </button>
+        </div>
+    );
 };
 
 export default PDFReport;

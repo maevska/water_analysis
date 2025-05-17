@@ -4,6 +4,7 @@ import DataInput from '../../components/DataInput/DataInput';
 import PredictionResults from '../../components/PredictionResults/PredictionResults';
 import Map from '../../components/Map/Map';
 import './WaterQualityAnalysis.css';
+import PDFReport from '../../components/PDFReport/PDFReport';
 
 const WaterQualityAnalysis = () => {
     const [analysisData, setAnalysisData] = useState({
@@ -59,12 +60,23 @@ const WaterQualityAnalysis = () => {
                     coordinates={analysisData.coordinates}
                 />
             )}
+            
             {analysisData.results && (
+                <>
                 <PredictionResults 
                     predictions={analysisData.results.predictions}
                     waterQualityClass={analysisData.results.waterQualityClass}
                     plot={analysisData.results.plot}
                 />
+                <PDFReport 
+                waterData={{
+                waterName: analysisData.waterName,
+                coordinates: analysisData.coordinates,
+                parameters: analysisData.parameters,
+                ...analysisData.results
+            }}
+        />
+                    </>
             )}
         </div>
     );
