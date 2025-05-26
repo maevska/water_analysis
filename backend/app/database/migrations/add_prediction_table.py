@@ -6,14 +6,12 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Создаем движок базы данных
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 Base = declarative_base()
 
 def upgrade():
     try:
         with engine.connect() as conn:
-            # Проверяем существование таблицы
             result = conn.execute(text("SELECT name FROM sqlite_master WHERE type='table' AND name='predictions'"))
             if not result.fetchone():
                 logger.info("Creating predictions table")
@@ -31,7 +29,6 @@ def upgrade():
                     )
                 """))
 
-                # Создаем индекс для оптимизации запросов
                 conn.execute(text("""
                     CREATE INDEX idx_predictions_user_id ON predictions(user_id)
                 """))
@@ -47,9 +44,9 @@ def upgrade():
 def downgrade():
     try:
         with engine.connect() as conn:
-            # Удаляем индекс
+
             conn.execute(text("DROP INDEX IF EXISTS idx_predictions_user_id"))
-            # Удаляем таблицу
+
             conn.execute(text("DROP TABLE IF EXISTS predictions"))
             
             conn.commit()

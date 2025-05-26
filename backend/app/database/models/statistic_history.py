@@ -14,6 +14,6 @@ class Prediction(Base):
     results = Column(JSON)
     water_quality_class = Column(JSON)
     created_at = Column(DateTime, default=datetime.utcnow)
-    status = Column(String)  # "completed" или "error"
+    status = Column(String)  
     
     user = relationship("User", back_populates="predictions")

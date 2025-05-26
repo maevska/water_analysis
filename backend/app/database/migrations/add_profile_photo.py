@@ -6,19 +6,17 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Создаем движок базы данных
+
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 Base = declarative_base()
 
 def upgrade():
     try:
-        # Проверяем, существует ли колонка
+
         with engine.connect() as conn:
-            # Получаем информацию о таблице
             result = conn.execute(text("PRAGMA table_info(users)"))
             columns = [row[1] for row in result.fetchall()]
             
-            # Если колонки нет, добавляем её
             if 'profile_photo' not in columns:
                 logger.info("Adding profile_photo column to users table")
                 conn.execute(text("ALTER TABLE users ADD COLUMN profile_photo VARCHAR"))
@@ -32,10 +30,7 @@ def upgrade():
 
 def downgrade():
     try:
-        # SQLite не поддерживает удаление колонок напрямую
-        # Вместо этого создаем новую таблицу без колонки и копируем данные
         with engine.connect() as conn:
-            # Создаем временную таблицу
             conn.execute(text("""
                 CREATE TABLE users_temp (
                     id INTEGER PRIMARY KEY,
@@ -50,7 +45,6 @@ def downgrade():
                 )
             """))
             
-            # Копируем данные из старой таблицы
             conn.execute(text("""
                 INSERT INTO users_temp 
                 SELECT id, email, username, firstName, lastName, hashed_password, 
@@ -58,10 +52,7 @@ def downgrade():
                 FROM users
             """))
             
-            # Удаляем старую таблицу
             conn.execute(text("DROP TABLE users"))
-            
-            # Переименовываем временную таблицу
             conn.execute(text("ALTER TABLE users_temp RENAME TO users"))
             
             conn.commit()

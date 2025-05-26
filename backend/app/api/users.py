@@ -117,7 +117,6 @@ async def get_user_predictions(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # Проверяем, существует ли пользователь
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(
@@ -125,7 +124,6 @@ async def get_user_predictions(
             detail="Пользователь не найден"
         )
     
-    # Получаем предсказания пользователя с пагинацией
     predictions = db.query(Prediction)\
         .filter(Prediction.user_id == user_id)\
         .order_by(Prediction.created_at.desc())\

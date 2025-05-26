@@ -29,7 +29,6 @@ async def predict(
     current_user = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Endpoint для получения предсказаний моделей"""
     try:
         predictions, water_quality_class, plot_data = ml_service.predict(data.parameters)
         
@@ -72,5 +71,4 @@ async def generate_report(
     data: WaterReportData,
     report_service: ReportService = Depends(get_report_service)
 ):
-    """Endpoint для генерации отчета"""
     return report_service.generate_report(data.dict()) 
