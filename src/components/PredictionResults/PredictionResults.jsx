@@ -29,7 +29,6 @@ const PredictionResults = ({ predictions, waterQualityClass, plot }) => {
 
       {plot && (
         <div className="plot-container">
-         
           <img 
             src={`data:image/png;base64,${plot}`}
             alt="График сравнения показателей"
