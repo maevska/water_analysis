@@ -1,34 +1,80 @@
 .analysis-page {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s ease;
+}
+
+.analysis-page.has-results {
+  background-color: #ffffff;
+  border-radius: 5px;
+  width: auto;
+  height: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.analysis-page.has-results h1 {
+  margin: 0;
+  color: #ffffff;
+  
 }
 
 .analysis-page h1 {
+  margin-top: 70px;
+  margin-bottom: 45px;
+  color: #ffffff;
+  font-size: 2.5rem;
+  font-weight: 700;
   text-align: center;
-  color: #333;
-  margin-bottom: 30px;
+  letter-spacing: -0.02em;
 }
 
-.error-message {
-    margin: 20px 0;
-    padding: 15px;
-    background-color: #f8d7da;
-    border: 1px solid #f5c6cb;
-    border-radius: 4px;
-    color: #721c24;
+.analysis-content {
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  transition: all 0.3s ease;
 }
 
-@media (max-width: 768px) {
-  .analysis-page {
-    padding: 10px;
-  }
-  
-  .parameters-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .results-grid {
-    grid-template-columns: 1fr;
-  }
+.analysis-content.centered {
+  justify-content: center;
+}
+
+.analysis-content.with-map {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1300px;
+  min-height: 300px;
+  gap: 40px;
+}
+
+.data-input-container {
+  flex: 2 1 900px;
+  max-width: 800px;
+  min-width: 320px;
+  max-height: 550px;
+  min-height: 200px;
+  border-radius: 16px;
+  padding-bottom: 20px;
+}
+
+.analysis-content.with-map .data-input-container {
+  flex: 2.5 1 750px;
+  padding: 12px;
+  height: 300px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(45deg, #97d6f1 30%, #0f8ed2  70%);
+  box-shadow: none !important;
+  border: none !important;
 }

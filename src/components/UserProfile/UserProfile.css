@@ -1,0 +1,154 @@
+.user-profile-modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 400px;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1001;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.user-profile-modal.open {
+    transform: translateX(0);
+}
+
+.user-profile-content {
+    padding: 20px;
+    height: 100%;
+    position: relative;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+.user-profile-content::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 5px;
+    line-height: 1;
+}
+
+.close-button:hover {
+    color: #333;
+}
+
+.user-profile-header {
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.user-profile-header h2 {
+    color: #278eae;
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.user-profile-body {
+    padding: 10px 0;
+}
+
+.profile-photo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.profile-photo {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 3px solid #3195b3;
+}
+
+.profile-photo-placeholder {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: #3195b3;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.photo-upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.upload-photo-button {
+    background: #3195b3;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.upload-photo-button:hover {
+    background: #15a1cc;
+}
+
+.upload-photo-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.profile-field {
+    margin-bottom: 20px;
+}
+
+.profile-field label {
+    display: block;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.profile-field span {
+    display: block;
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.loading {
+    text-align: center;
+    color: #666;
+    padding: 20px;
+}
+
+.error-message {
+    background: #fff1f2;
+    border: 1px solid #f8c1c6;
+    color: #dc3545;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    text-align: center;
+}

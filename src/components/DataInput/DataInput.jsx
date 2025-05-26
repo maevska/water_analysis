@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import './DataInput.css';
 
-const DataInput = ({ onSubmit }) => {
-    const [waterName, setWaterName] = useState('');
+const DataInput = ({ onSubmit, disabled, onUnlock, showUnlockButton, initialData }) => {
+    const [waterName, setWaterName] = useState(initialData?.waterName || '');
     const [parameters, setParameters] = useState({
         temp_water: '',
         temp_air: '',
@@ -16,6 +16,22 @@ const DataInput = ({ onSubmit }) => {
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    const handleReset = () => {
+        setWaterName('');
+        setParameters({
+            temp_water: '',
+            temp_air: '',
+            precipitation: '',
+            water_level: '',
+            ph: '',
+            turbidity: '',
+            oxygen: '',
+            nitrates: '',
+            ammonia: ''
+        });
+        onUnlock();
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -38,18 +54,26 @@ const DataInput = ({ onSubmit }) => {
                     lat: parseFloat(data[0].lat),
                     lng: parseFloat(data[0].lon)
                 };
-                
+
+                const validatedParameters = {};
+                for (const [key, value] of Object.entries(parameters)) {
+                    const numValue = parseFloat(value);
+                    if (isNaN(numValue)) {
+                        throw new Error(`Поле "${key}" должно быть числом`);
+                    }
+                    validatedParameters[key] = numValue;
+                }
+
                 onSubmit({
                     waterName,
                     coordinates,
-                    parameters
+                    parameters: validatedParameters
                 });
             } else {
                 throw new Error('Не удалось найти координаты водоема');
             }
         } catch (error) {
-            setError('Не удалось определить координаты водоема. Пожалуйста, проверьте название.');
-            console.error('Ошибка:', error);
+            setError(error.message);
         } finally {
             setLoading(false);
         }
@@ -65,14 +89,16 @@ const DataInput = ({ onSubmit }) => {
     return (
         <div className="data-input-container">
             <h2>Ввод гидробиологических данных</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="data-input-form">
                 <div className="input-group">
                     <label>Название водоема:</label>
                     <input
+                        className="NameLabel"
                         type="text"
                         value={waterName}
                         onChange={(e) => setWaterName(e.target.value)}
                         required
+                        disabled={disabled}
                     />
                 </div>
 
@@ -81,25 +107,36 @@ const DataInput = ({ onSubmit }) => {
                 <div className="parameters-grid">
                     {Object.entries(parameters).map(([key, value]) => (
                         <div key={key} className="parameter-input">
-                            <label>{key}:</label>
+                            <label>{key.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}:</label>
                             <input
                                 type="number"
                                 step="0.1"
                                 value={value}
                                 onChange={(e) => handleParameterChange(key, e.target.value)}
                                 required
+                                disabled={disabled}
                             />
                         </div>
                     ))}
                 </div>
-
-                <button 
-                    type="submit" 
-                    className="submit-button"
-                    disabled={loading}
-                >
-                    {loading ? 'Получение координат...' : 'Получить прогноз'}
-                </button>
+                <div className="button-container">
+                    <button 
+                        type="submit" 
+                        className="submit-button"
+                        disabled={disabled}
+                    >
+                        {loading ? 'Получение координат...' : 'Получить прогноз'}
+                    </button>
+                    {showUnlockButton && (
+                        <button 
+                            type="button"
+                            className="submit-button unlock-button"
+                            onClick={handleReset}
+                        >
+                            Новый прогноз
+                        </button>
+                    )}
+                </div>
             </form>
         </div>
     );

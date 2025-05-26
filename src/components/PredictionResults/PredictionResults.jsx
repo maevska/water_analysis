@@ -7,34 +7,39 @@ const PredictionResults = ({ predictions, waterQualityClass, plot }) => {
     }
 
     return (
-        <div className="prediction-results">
-            <h3>Результаты прогноза:</h3>
-            <div className="results-grid">
-                {Object.entries(predictions).map(([parameter, value]) => (
-                    <div key={parameter} className="result-item">
-                        <span className="parameter-name">{parameter}</span>
-                        <span className="parameter-value">
-                            {typeof value === 'number' ? value.toFixed(2) : value}
-                        </span>
-                    </div>
-                ))}
+  <div className="prediction-results">
+    <h3>Результаты прогноза</h3>
+    <div className="results-wrapper">
+      <div className="results-column">
+        <div className="results-grid">
+          {Object.entries(predictions).map(([parameter, value]) => (
+            <div key={parameter} className="result-item">
+              <span className="parameter-name">{parameter}</span>
+              <span className="parameter-value">
+                {typeof value === 'number' ? value.toFixed(2) : value}
+              </span>
             </div>
-            <div className="quality-class">
-                <h4>Класс качества воды:</h4>
-                <p>{waterQualityClass.label}</p>
-            </div>
-            {plot && (
-                <div className="plot-container">
-                    <h4>График сравнения показателей:</h4>
-                    <img 
-                        src={`data:image/png;base64,${plot}`}
-                        alt="График сравнения показателей"
-                        className="plot-image"
-                    />
-                </div>
-            )}
+          ))}
         </div>
-    );
+        <div className="quality-class">
+          <h4>Класс качества воды:</h4>
+          <p>{waterQualityClass.label}</p>
+        </div>
+      </div>
+
+      {plot && (
+        <div className="plot-container">
+         
+          <img 
+            src={`data:image/png;base64,${plot}`}
+            alt="График сравнения показателей"
+            className="plot-image"
+          />
+        </div>
+      )}
+    </div>
+  </div>
+);
 };
 
 export default PredictionResults;

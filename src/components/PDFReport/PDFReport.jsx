@@ -8,7 +8,6 @@ const PDFReport = ({ waterData }) => {
         try {
             setIsLoading(true);
             
-            // Подготавливаем данные в нужном формате
             const reportData = {
                 waterName: waterData.waterName,
                 coordinates: waterData.coordinates || {},
@@ -57,7 +56,7 @@ const PDFReport = ({ waterData }) => {
                 className="generate-report-btn"
                 disabled={isLoading}
             >
-                {isLoading ? 'Создание отчета...' : 'Скачать отчет PDF'}
+                {isLoading ? 'Создание отчета...' : 'Скачать отчет'}
             </button>
         </div>
     );

@@ -32,9 +32,10 @@ const Map = ({ waterName, coordinates }) => {
     return (
         <div className="map-container">
             <MapContainer
+                style={{ width: '100%', height: '100%' }}
                 center={[coordinates.lat, coordinates.lng]}
                 zoom={13}
-                style={{ height: '400px', width: '100%' }}
+                
             >
                 <ChangeView center={[coordinates.lat, coordinates.lng]} />
                 <TileLayer
