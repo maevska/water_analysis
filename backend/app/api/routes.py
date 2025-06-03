@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
-from app.schemas.water import WaterData, WaterReportData, PredictionResponse
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from app.schemas.water import WaterData, WaterReportData, PredictionResponse, CSVUploadResponse
 from app.services.ml_service import MLService
 from app.services.report_service import ReportService
 from app.core.exceptions import WaterQualityException
@@ -7,6 +7,8 @@ from app.database.database import get_db
 from app.database.models.statistic_history import Prediction
 from app.core.security import get_current_user
 from sqlalchemy.orm import Session
+import pandas as pd
+import io
 
 router = APIRouter()
 
@@ -21,6 +23,74 @@ def get_ml_service():
 
 def get_report_service():
     return ReportService()
+
+@router.post("/upload-csv", response_model=CSVUploadResponse)
+async def upload_csv(
+    file: UploadFile = File(...),
+    current_user = Depends(get_current_user)
+):
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(
+            status_code=400,
+            detail="Файл должен быть в формате CSV"
+        )
+
+    try:
+        contents = await file.read()
+        df = pd.read_csv(io.StringIO(contents.decode('utf-8')))
+        
+        required_columns = ['water_name', 'temp_water', 'temp_air', 'precipitation', 
+                    'water_level', 'ph', 'turbidity', 'oxygen', 'nitrates', 'ammonia']
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        
+        if missing_columns:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Отсутствуют обязательные колонки: {', '.join(missing_columns)}"
+            )
+
+
+        row = df.iloc[0]
+        
+        water_name = str(row['water_name'])
+        parameters = {
+            'temp_water': float(row['temp_water']),
+            'temp_air': float(row['temp_air']),
+            'precipitation': float(row['precipitation']),
+            'water_level': float(row['water_level']),
+            'ph': float(row['ph']),
+            'turbidity': float(row['turbidity']),
+            'oxygen': float(row['oxygen']),
+            'nitrates': float(row['nitrates']),
+            'ammonia': float(row['ammonia'])
+        }
+
+        return CSVUploadResponse(
+            waterName=water_name,
+            parameters=parameters,
+            message="CSV файл успешно обработан"
+        )
+
+    except pd.errors.EmptyDataError:
+        raise HTTPException(
+            status_code=400,
+            detail="CSV файл пуст"
+        )
+    except pd.errors.ParserError:
+        raise HTTPException(
+            status_code=400,
+            detail="Ошибка при чтении CSV файла"
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Ошибка в данных: {str(e)}"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Ошибка при обработке файла: {str(e)}"
+        )
 
 @router.post("/predict", response_model=PredictionResponse)
 async def predict(
