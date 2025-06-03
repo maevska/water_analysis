@@ -25,7 +25,7 @@
 
 .analysis-page h1 {
   margin-top: 70px;
-  margin-bottom: 45px;
+  margin-bottom: 35px;
   color: #ffffff;
   font-size: 2.5rem;
   font-weight: 700;
@@ -61,7 +61,7 @@
   flex: 2 1 900px;
   max-width: 800px;
   min-width: 320px;
-  max-height: 550px;
+  max-height: 620px;
   min-height: 200px;
   border-radius: 16px;
   padding-bottom: 20px;

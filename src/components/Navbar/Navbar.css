@@ -10,7 +10,7 @@
     right: 0;
     z-index: 1000;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 0 0 25px 25px; 
+    border-radius: 0 0 25px 25px;
     overflow: hidden;
 }
 
@@ -60,7 +60,7 @@
 
 .nav-button.profile-button:hover {
     background: white;
-    color:  #1bbade;
+    color: #1bbade;
 }
 
 .nav-button.register {

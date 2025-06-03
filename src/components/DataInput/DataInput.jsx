@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './DataInput.css';
+import { waterApi } from '../../api/water.api';
 
 const DataInput = ({ onSubmit, disabled, onUnlock, showUnlockButton, initialData }) => {
     const [waterName, setWaterName] = useState(initialData?.waterName || '');
@@ -16,6 +17,7 @@ const DataInput = ({ onSubmit, disabled, onUnlock, showUnlockButton, initialData
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [csvFile, setCsvFile] = useState(null);
 
     const handleReset = () => {
         setWaterName('');
@@ -30,7 +32,32 @@ const DataInput = ({ onSubmit, disabled, onUnlock, showUnlockButton, initialData
             nitrates: '',
             ammonia: ''
         });
+        setCsvFile(null);
         onUnlock();
+    };
+
+    const handleFileUpload = async (event) => {
+        const file = event.target.files[0];
+        if (file && file.type === 'text/csv') {
+            setCsvFile(file);
+            setLoading(true);
+            setError(null);
+
+            try {
+                const response = await waterApi.uploadCSV(file);
+                setWaterName(response.waterName);
+                setParameters(response.parameters);
+                setError(null);
+            } catch (error) {
+                setError(error.message);
+                setCsvFile(null);
+            } finally {
+                setLoading(false);
+            }
+        } else {
+            setError('Пожалуйста, загрузите файл в формате CSV');
+            setCsvFile(null);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -42,36 +69,36 @@ const DataInput = ({ onSubmit, disabled, onUnlock, showUnlockButton, initialData
             const response = await fetch(
                 `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(waterName + ' водоем')}&limit=1`
             );
-            
+
             if (!response.ok) {
-                throw new Error('Ошибка при поиске координат');
+                throw new Error('Не удалось определить координаты водоема, проверьте название водоема');
             }
 
             const data = await response.json();
-            
-            if (data && data.length > 0) {
-                const coordinates = {
-                    lat: parseFloat(data[0].lat),
-                    lng: parseFloat(data[0].lon)
-                };
 
-                const validatedParameters = {};
-                for (const [key, value] of Object.entries(parameters)) {
-                    const numValue = parseFloat(value);
-                    if (isNaN(numValue)) {
-                        throw new Error(`Поле "${key}" должно быть числом`);
-                    }
-                    validatedParameters[key] = numValue;
-                }
-
-                onSubmit({
-                    waterName,
-                    coordinates,
-                    parameters: validatedParameters
-                });
-            } else {
-                throw new Error('Не удалось найти координаты водоема');
+            if (!data || data.length === 0) {
+                throw new Error('Не удалось определить координаты водоема, проверьте название водоема');
             }
+
+            const coordinates = {
+                lat: parseFloat(data[0].lat),
+                lng: parseFloat(data[0].lon)
+            };
+
+            const validatedParameters = {};
+            for (const [key, value] of Object.entries(parameters)) {
+                const numValue = parseFloat(value);
+                if (isNaN(numValue)) {
+                    throw new Error(`Поле "${key}" должно быть числом`);
+                }
+                validatedParameters[key] = numValue;
+            }
+
+            onSubmit({
+                waterName,
+                coordinates,
+                parameters: validatedParameters
+            });
         } catch (error) {
             setError(error.message);
         } finally {
@@ -102,8 +129,26 @@ const DataInput = ({ onSubmit, disabled, onUnlock, showUnlockButton, initialData
                     />
                 </div>
 
+                <div className="csv-upload-container">
+                    <label className="csv-upload-label">
+                        {loading ? 'Загрузка...' : 'Загрузить данные из CSV'}
+                        <input
+                            type="file"
+                            accept=".csv"
+                            onChange={handleFileUpload}
+                            disabled={disabled || loading}
+                            className="csv-upload-input"
+                        />
+                    </label>
+                    {csvFile && (
+                        <span className="csv-file-name">
+                            Выбран файл: {csvFile.name}
+                        </span>
+                    )}
+                </div>
+
                 {error && <div className="error-message">{error}</div>}
-                
+
                 <div className="parameters-grid">
                     {Object.entries(parameters).map(([key, value]) => (
                         <div key={key} className="parameter-input">
@@ -120,15 +165,15 @@ const DataInput = ({ onSubmit, disabled, onUnlock, showUnlockButton, initialData
                     ))}
                 </div>
                 <div className="button-container">
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         className="submit-button"
-                        disabled={disabled}
+                        disabled={disabled || loading}
                     >
                         {loading ? 'Получение координат...' : 'Получить прогноз'}
                     </button>
                     {showUnlockButton && (
-                        <button 
+                        <button
                             type="button"
                             className="submit-button unlock-button"
                             onClick={handleReset}

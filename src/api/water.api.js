@@ -10,6 +10,22 @@ export const waterApi = {
         }
     },
 
+    uploadCSV: async (file) => {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await axiosInstance.post('/upload-csv', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.detail || 'Ошибка при загрузке CSV файла');
+        }
+    },
+
     generateReport: async (data) => {
         try {
             const response = await axiosInstance.post('/generate-report', data, {

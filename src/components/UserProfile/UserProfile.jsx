@@ -53,7 +53,7 @@ const UserProfile = ({ isOpen, onClose }) => {
 
     useEffect(() => {
         if (isOpen) {
-            fetchUserData(); 
+            fetchUserData();
         }
     }, [isOpen]);
 
