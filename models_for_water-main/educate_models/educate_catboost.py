@@ -36,4 +36,4 @@ print("\nConfusion Matrix:")
 print(confusion_matrix(y_test, y_pred))
 
 model.save_model('diplom-project/models_for_water-main/models/water_catboost_model.cbm')
-print("\n✅ Модель сохранена как 'water_catboost_model.cbm'")
+print("\nМодель сохранена как 'water_catboost_model.cbm'")

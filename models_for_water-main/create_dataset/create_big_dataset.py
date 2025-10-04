@@ -59,18 +59,11 @@ for lake_id in range(1, n_lakes + 1):
             water_level[i], pH[i], oxygen[i], nitrates[i], ammonia[i], turbidity[i]
         ])
 
-columns = ['lake_id', 'date', 'temp_water', 'temp_air', 'precipitation', 
-           'water_level', 'pH', 'oxygen', 'nitrates', 'ammonia', 'turbidity']
+columns = ['lake_id', 'date', 'temp_water', 'temp_air', 'precipitation',  'water_level', 'pH', 'oxygen', 'nitrates', 'ammonia', 'turbidity']
 
 df = pd.DataFrame(data, columns=columns)
 
 def classify_quality(row):
-    """
-    Новая логика качества воды:
-    - 'bad', если мутность высокая ИЛИ кислорода мало ИЛИ азот высокий тд
-    - 'medium', если всё среднее
-    - 'good', если вода чистая по всем метрикам
-    """
     score = 0
     
     if row['oxygen'] >= 6:
@@ -99,5 +92,5 @@ df['quality_class'] = df.apply(classify_quality, axis=1)
 
 df.to_csv('datasets/water_dataset.csv', index=False)
 
-print("✅ Датасет успешно сохранён как 'datasets/water_dataset.csv'")
+print("Датасет успешно сохранён как 'datasets/water_dataset.csv'")
 print(df['quality_class'].value_counts())

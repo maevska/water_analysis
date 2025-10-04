@@ -62,12 +62,11 @@ for lake_id in range(1, n_lakes + 1):
             water_level[i], pH[i], turbidity[i], oxygen[i], nitrates[i], ammonia[i]
         ])
 
-columns = ['date', 'lake_id', 'temp_water', 'temp_air', 'precipitation',
-           'water_level', 'pH', 'turbidity', 'oxygen', 'nitrates', 'ammonia']
+columns = ['date', 'lake_id', 'temp_water', 'temp_air', 'precipitation','water_level', 'pH', 'turbidity', 'oxygen', 'nitrates', 'ammonia']
 
 df = pd.DataFrame(data, columns=columns)
 
 df.to_csv('dataset/water_quality_dataset.csv', index=False)
 
-print("✅ Датасет успешно сохранён как 'water_quality_dataset.csv'")
+print("Датасет успешно сохранён как 'water_quality_dataset.csv'")
 print(df.head(10))

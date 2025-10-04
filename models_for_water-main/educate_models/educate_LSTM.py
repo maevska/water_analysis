@@ -85,4 +85,4 @@ for epoch in range(EPOCHS):
 
 torch.save(model.state_dict(), 'diplom-project/models_for_water-main/models/lstm_multitask_water_quality_model.pth')
 
-print('✅ Модель LSTM обучена и сохранена как lstm_multitask_water_quality_model.pth')
+print('Модель LSTM обучена и сохранена как lstm_multitask_water_quality_model.pth')
